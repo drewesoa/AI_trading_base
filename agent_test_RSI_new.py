@@ -118,7 +118,7 @@ if os.path.exists(PERSIST_FILE):
     try:
         with open(PERSIST_FILE, 'rb') as f:
             loaded_list = pickle.load(f)
-            prices = deque(loaded_list, maxlen=20)
+            prices = deque(loaded_list, maxlen=300)
         print(f"[Startup] Loaded {len(prices)} persisted prices from {PERSIST_FILE}")
     except Exception as e:
         print(f"[WARNING] Failed to load persisted prices: {str(e)} → starting fresh")
@@ -274,7 +274,7 @@ def get_current_price(_):
             
             prices.append(price_usd)
             print(f"[DexScreener OK @ {latest_time}] KVCM = ${price_usd:.6f}  (attempt {attempt+1})")
-            print(f"   → Window: {len(prices)}/20")
+            print(f"   → Window size: {len(prices)} / {prices.maxlen}")
             
             try:
                 with open(PERSIST_FILE, 'wb') as f:
@@ -562,7 +562,10 @@ def collect_price():
             print(f"[PRICE FAILED @ {timestamp}] {price_info}")
         else:
             print(f"[PRICE COLLECTED @ {timestamp}] {price_info}")
-        print(f"   → Window size: {len(prices)} / 20")
+        
+        # UPDATED LINE: Use prices.maxlen to show the actual capacity
+        print(f"   → Window size: {len(prices)} / {prices.maxlen}")
+        
     except Exception as e:
         print(f"Collection crashed: {e}")
 
